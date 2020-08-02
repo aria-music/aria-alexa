@@ -4,12 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 )
 
 func ParseResponse(body io.Reader) (*Response, error) {
 	rr, err := ParseRawResponse(body)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get RawResponse: %w", err)
+		// TODO: will be fixed in aria-core
+		log.Printf("failed to get RawResponse. Returning empty response...")
+		return new(Response), nil
+		// return nil, fmt.Errorf("failed to get RawResponse: %w", err)
 	}
 
 	r, err := rr.ParseRawResponse()
