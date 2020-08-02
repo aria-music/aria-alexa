@@ -1,0 +1,20 @@
+name: "deploy to AWS Lambda"
+on:
+  release:
+    types: [created]
+
+steps:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: build
+        runs: make deploy > /dev/null 2>&1 # TODO: we need logs!
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          LAMBDA_FUNCTION_ARN: ${{ secrets.LAMBDA_FUNCTION_ARN }}
+      - runs: sarisia/actions-status-discord@v1
+        if: always()
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
